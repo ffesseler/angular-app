@@ -1,5 +1,9 @@
 module.exports = function (grunt) {
 
+  var path = require('path'),
+      isWindows = process.platform === 'win32',
+      ptorDir = 'node_modules' + (isWindows ? '/.' : '/protractor/') + 'bin/';
+
   grunt.loadNpmTasks('grunt-contrib-concat');
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-contrib-uglify');
@@ -9,12 +13,18 @@ module.exports = function (grunt) {
   grunt.loadNpmTasks('grunt-recess');
   grunt.loadNpmTasks('grunt-karma');
   grunt.loadNpmTasks('grunt-html2js');
+  grunt.loadNpmTasks('grunt-shell');
+  grunt.loadNpmTasks('grunt-protractor-webdriver');
+  grunt.loadNpmTasks('grunt-protractor-runner');
+  grunt.loadNpmTasks('grunt-shell');
+
 
   // Default task.
   grunt.registerTask('default', ['jshint','build','karma:unit']);
   grunt.registerTask('build', ['clean','html2js','concat','recess:build','copy:assets']);
   grunt.registerTask('release', ['clean','html2js','uglify','jshint','karma:unit','concat:index', 'recess:min','copy:assets']);
   grunt.registerTask('test-watch', ['karma:watch']);
+  grunt.registerTask('e2e', ['shell:protractor', 'protractor_webdriver:e2e', 'protractor:e2e']);
 
   // Print a timestamp (useful for when watching)
   grunt.registerTask('timestamp', function() {
@@ -59,6 +69,36 @@ module.exports = function (grunt) {
       unit: { options: karmaConfig('test/config/unit.js') },
       watch: { options: karmaConfig('test/config/unit.js', { singleRun:false, autoWatch: true}) }
     },
+
+    shell: {
+      protractor: {
+        options: {
+          stdout: true
+        },
+        command: path.resolve(ptorDir + 'webdriver-manager') + ' update --standalone --chrome'
+      }
+    },
+
+    protractor: {
+      options: {
+        keepAlive: true,
+        noColor: false
+      },
+      e2e: {
+        options: {
+          configFile: "test/config/protractor.config.js"
+        }
+      }
+    },
+
+    protractor_webdriver: {
+      e2e: {
+        options: {
+          path: ptorDir
+        }
+      }
+    },
+
     html2js: {
       app: {
         options: {

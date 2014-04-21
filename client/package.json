@@ -31,6 +31,12 @@
     "grunt-karma": "~0.4.4",
     "grunt-html2js": "~0.1.0",
     "grunt-contrib-watch": "~0.3.1",
-    "protractor": "0.21.0"
+    "protractor": "0.21.0",
+    "grunt-protractor-webdriver": "^0.1.6",
+    "grunt-protractor-runner": "^0.2.4",
+    "grunt-shell": "^0.6.4"
+  },
+  "scripts": {
+    "test": "node ./node_modules/protractor/bin/protractor test/config/protractor.config.js"
   }
 }
